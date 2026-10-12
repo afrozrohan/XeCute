@@ -17,5 +17,6 @@ credentials.json
 token.json
 
 workspace/*
+logs
 
 test.py
