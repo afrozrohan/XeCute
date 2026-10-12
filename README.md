@@ -1,4 +1,4 @@
-# XeCute :- Autonomous AI Task Worker
+# XeCute : Autonomous AI Task Worker
 
 An AI-powered task automation agent built with Python, LangGraph, and LangChain. The agent interprets natural-language instructions, selects tools, executes tasks, and verifies the results. A Streamlit interface provides a simple way to submit tasks and view execution logs.
 
@@ -37,7 +37,6 @@ The application uses a tool-calling agent orchestrated by LangGraph.
 5. **Verification:** The workflow evaluates available evidence to determine whether the task succeeded.
 6. **Recovery or completion:** The agent may retry unsuccessful steps or finish with a completion or review status.
 
-The Streamlit interface launches the existing backend and displays its output.
 
 ## Project Structure
 
@@ -61,14 +60,6 @@ ai-task-agent/
 
 The exact contents may vary depending on the current project version.
 
-## Prerequisites
-
-- Windows
-- Python version compatible with the project's `pyproject.toml`
-- `uv`
-- An OpenRouter API key
-- Gmail API credentials if using email tools
-- A configured browser environment if using browser automation
 
 ## Installation
 
