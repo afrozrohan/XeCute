@@ -28,7 +28,9 @@ An AI-powered task automation agent built with Python, LangGraph, and LangChain.
 
 ## Architecture
 
-![Architecture](Architecture.jpg)
+
+<img src="Architecture.jpg" alt="Architecture" width="700">
+
 
 The application uses a tool-calling agent orchestrated by LangGraph.
 
@@ -54,10 +56,10 @@ ai-task-agent/
 ├── pyproject.toml        # Project metadata and dependencies
 ├── uv.lock               # Locked dependency versions
 ├── .python-version       # Python version configuration
-├── .env                  # Local secrets; do not commit
-├── credentials.json      # Local Gmail OAuth credentials; do not commit
-├── token.json            # Local OAuth token; do not commit
-└── logs/                 # Local execution logs; do not commit
+├── .env                  # Local secrets
+├── credentials.json      # Local Gmail OAuth credentials
+├── token.json            # Local OAuth token
+└── logs/                 # Local execution logs
 ```
 
 
@@ -136,20 +138,5 @@ http://localhost:8501
 - open url and extract data/open a certain page.
 
 
-## Current Limitations
-
-- Desktop automation can be sensitive to window focus, UI control names, and Windows application behavior.
-- Some UI actions may be difficult to verify automatically.
-- Task completion depends on the model's decisions and the reliability of the selected tools.
-- Complex or ambiguous tasks may require retries or manual review.
-- The initial Streamlit interface focuses on task submission and execution logs; persistent conversational threads and durable task history may require additional implementation.
-
-## Future Improvements
-
-- Persistent conversation threads using LangGraph checkpointing.
-- Better Memory and knowledge base systems.
-- Better Desktop automation access, guardrails.
-- Improved task history, execution status, and error reporting.
-- Human approval for sensitive or irreversible actions.
-- A complete Evaluation against benchmark agentic systems.
+### Thank You
 
