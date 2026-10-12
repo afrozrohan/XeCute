@@ -60,8 +60,6 @@ ai-task-agent/
 └── logs/                 # Local execution logs; do not commit
 ```
 
-The exact contents may vary depending on the current project version.
-
 
 ## Installation
 
@@ -69,7 +67,7 @@ The exact contents may vary depending on the current project version.
 
 ```bash
 git clone https://github.com/afrozrohan/XeCute.git
-cd ai-task-agent
+cd XeCute
 ```
 
 ### 2. Install dependencies
@@ -150,7 +148,8 @@ http://localhost:8501
 
 - Persistent conversation threads using LangGraph checkpointing.
 - Better Memory and knowledge base systems.
-- Better verification of desktop actions.
+- Better Desktop automation access, guardrails.
 - Improved task history, execution status, and error reporting.
 - Human approval for sensitive or irreversible actions.
+- A complete Evaluation against benchmark agentic systems.
 
