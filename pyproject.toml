@@ -1,0 +1,23 @@
+[project]
+name = "ai-task-agent"
+version = "0.1.0"
+description = "This is an AI agent that complete tasks in your computer by using tools. It can access the browser your email (needs authorization) an active windows in your computer."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "google-api-python-client>=2.201.0",
+    "google-auth-httplib2>=0.4.4",
+    "google-auth-oauthlib>=1.5.0",
+    "langchain>=1.4.3",
+    "langchain-google-genai>=4.4.1",
+    "langchain-mcp-adapters>=0.3.2",
+    "langchain-openai>=1.7.0",
+    "langgraph>=1.2.14",
+    "openpyxl>=3.1.5",
+    "playwright>=1.63.0",
+    "pydantic>=2.14.0",
+    "pymupdf>=1.28.2",
+    "python-dotenv>=1.2.4",
+    "pywinauto>=0.6.9",
+    "streamlit>=1.65.0",
+]
