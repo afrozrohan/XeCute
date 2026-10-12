@@ -30,9 +30,6 @@ An AI-powered task automation agent built with Python, LangGraph, and LangChain.
 
 ![Architecture](Architecture.jpg)
 
-<img src="Architecture.jpg" alt="Architecture" width="500">
-
-
 The application uses a tool-calling agent orchestrated by LangGraph.
 
 1. **Task input:** The user submits a natural-language task.
