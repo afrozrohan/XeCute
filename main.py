@@ -8,7 +8,6 @@ from langgraph.errors import GraphRecursionError
 
 from agents import agent
 
-# Avoid UnicodeEncodeError on Windows consoles when the model prints symbols.
 for stream in (sys.stdout, sys.stderr):
     try:
         stream.reconfigure(encoding="utf-8", errors="replace")
@@ -78,7 +77,7 @@ def main() -> None:
         record["observations"] = result.get("observations", [])
         record["completed_steps"] = result.get("completed_steps", [])
         record["attempt_history"] = result.get("attempt_history", [])
-        # Real outcome from the verifier, not a hard-coded "agent_finished".
+        # Output fromm the verifier llm
         record["status"] = result.get("status", "unknown")
 
         print("\n--- Attempt History ---")

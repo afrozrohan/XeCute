@@ -3,7 +3,7 @@
 ## Architecture Overview
 
 
-<img src="Architecture.jpg" alt="Architecture" width="700">
+<img src="assets\Architecture.jpg" alt="Architecture" width="700">
 
 
 The system uses Python, LangGraph, LangChain, and an LLM accessed through OpenRouter. LangGraph provides the orchestration layer, while LangChain supplies the model and tool-calling interfaces.
@@ -48,6 +48,8 @@ Structured state supports debugging, execution tracking, and future improvements
 A successful tool call does not necessarily mean that the user's task has been completed. For example, a file operation may execute successfully but produce incorrect content, or a browser click may succeed without navigating to the intended destination.
 The design therefore includes a verification stage that evaluates the available evidence against the original goal. A bounded recovery mechanism is intended to allow another attempt when appropriate, while preventing unlimited retry loops.
 Programmatic checks, such as checking a file's existence or comparing its saved contents, are preferred for properties that can be tested deterministically. LLM-based verification is useful for semantic judgments but cannot guarantee correctness.
+
+<img src="assets\verification.png" alt="Architecture" width="700">
 
 ### 7. Execution Logging
 Task execution is designed to produce structured logs containing the original task, tool calls, observations, status, duration, and verification information.

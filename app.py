@@ -18,13 +18,13 @@ PROJECT_DIR = Path(__file__).resolve().parent
 WORKSPACE = PROJECT_DIR / "workspace"
 LOG_FILE = PROJECT_DIR / "logs" / "runs.jsonl"
 
-DEFAULT_MAX_RUNTIME = 300
+DEFAULT_MAX_RUNTIME = 500
 MAX_LOG_LINES = 5000
 MAX_DOWNLOAD_BYTES = 10 * 1024 * 1024
 TEXT_PREVIEW_SUFFIXES = {".txt", ".md", ".csv", ".json", ".log"}
 
 DEFAULT_TASK = (
-    "list latest emails from the last 2 days" 
+    "list latest emails and summarize"
 )
 EXAMPLES = {
 
@@ -44,7 +44,7 @@ STATUS_ICONS = {"completed": "✅", "failed": "❌", "needs_review": "⚠️"}
 
 
 def backend_command() -> list[str]:
-    """Use `uv run` only for uv projects; otherwise the current interpreter."""
+
     if shutil.which("uv") and (PROJECT_DIR / "pyproject.toml").exists():
         return ["uv", "run", "python", "-u", "main.py"]
     return [sys.executable, "-u", "main.py"]
@@ -140,7 +140,6 @@ class AgentRun:
         with self._lock:
             return "".join(self.lines)
 
-    # -- background threads ------------------------------------------------
     def _read_output(self) -> None:
         try:
             for line in self.process.stdout:
@@ -217,9 +216,7 @@ def run_registry() -> dict:
     return {"active": None}
 
 
-# --------------------------------------------------------------------------
 # Output parsing
-# --------------------------------------------------------------------------
 
 def parse_output(text: str) -> dict:
     info = {
@@ -233,18 +230,18 @@ def parse_output(text: str) -> dict:
     }
 
     for match in re.finditer(
-        r"\[DEBUG\] Agent response: tool_calls = \[(.*?)\]", text
+        r"Agent response: tool_calls = \[(.*?)\]", text
     ):
         info["tools"].extend(re.findall(r"['\"]([^'\"]+)['\"]", match.group(1)))
 
     for line in reversed(text.splitlines()):
-        if "[DEBUG] Entered recover_node" in line:
+        if "Entered recover_node" in line:
             info["phase"] = "Recovering from a failed attempt"
             break
-        if "[DEBUG] Entered verify_node" in line or "Verification verdict" in line:
+        if "Entered verify_node" in line or "Verification verdict" in line:
             info["phase"] = "Verifying the result"
             break
-        match = re.search(r"\[DEBUG\] Agent response: tool_calls = \[(.*?)\]", line)
+        match = re.search(r"Agent response: tool_calls = \[(.*?)\]", line)
         if match:
             names = re.findall(r"['\"]([^'\"]+)['\"]", match.group(1))
             info["phase"] = (
@@ -320,17 +317,12 @@ def fmt_seconds(seconds: float) -> str:
     return f"{seconds // 60}m {seconds % 60:02d}s" if seconds >= 60 else f"{seconds}s"
 
 
-# --------------------------------------------------------------------------
-# UI pieces
-# --------------------------------------------------------------------------
-
 def render_run() -> None:
     """Live view of the current run (re-executed every second while running)."""
     run = st.session_state.get("run")
     if run is None:
         return
 
-    # When the run ends, do one full rerun so buttons/history refresh.
     if not run.running and st.session_state.get("_finalized_run") != run.id:
         st.session_state["_finalized_run"] = run.id
         st.rerun()
@@ -488,7 +480,7 @@ def render_sidebar() -> dict:
         )
         model = st.text_input(
             "Model override (optional)",
-            placeholder="uses OPENROUTER_MODEL from .env",
+            placeholder="OPENROUTER_MODEL",
             help="Free routed models are often unreliable at tool calling.",
         ).strip()
         allow_risky = st.checkbox(
@@ -538,7 +530,7 @@ def main() -> None:
         st.error("This app needs Streamlit 1.37 or newer: `pip install -U streamlit`.")
         st.stop()
 
-    st.title("🤖 AI Task Worker")
+    st.title("🤖 XeCute- AI Task Executer")
     st.caption("Give your autonomous agent a task and watch it work.")
 
     settings = render_sidebar()
@@ -558,7 +550,7 @@ def main() -> None:
             disabled=running,
         )
         task = st.text_area(
-            "What should the AI worker do?",
+            "What can I do for you?",
             key="task_text",
             height=130,
             disabled=running,

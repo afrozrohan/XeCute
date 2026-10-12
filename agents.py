@@ -13,41 +13,14 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode
 
-from tools import (
-    list_workspace_files,
-    read_file,
-    read_pdf,
-    read_excel,
-    write_file,
-    write_excel,
-)
-from browser_tools import (
-    browser_open,
-    browser_get_page_text,
-    browser_click,
-    browser_fill,
-    browser_close,
-)
-from desktop_tools import (
-    list_desktop_windows,
-    inspect_window,
-    focus_window,
-    click_control,
-    type_text,
-    verify_desktop_text,
-)
-from email_tools import (
-    search_emails,
-    read_email,
-    list_email_attachments,
-    download_email_attachment,
-)
+from tools import *
+from browser_tools import *
+from desktop_tools import *
+from email_tools import *
 
-MAX_RETRIES = 2
+MAX_RETRIES = 3
 
-api_key = os.getenv("OPENROUTER_API_KEY3")
-# Free routed models are often weak at tool calling. Set OPENROUTER_MODEL in
-# .env to a model that reliably supports tools for much better results.
+api_key = os.getenv("OPENROUTER_API_KEY")
 MODEL_NAME = os.getenv("OPENROUTER_MODEL", "openrouter/free")
 
 if not api_key:
@@ -144,7 +117,7 @@ def agent_node(state: TaskState):
         [SystemMessage(content=SYSTEM_PROMPT), *state["messages"]]
     )
     print(
-        "[DEBUG] Agent response:",
+        "Agent response:",
         "tool_calls =", [call["name"] for call in response.tool_calls],
         "content_length =", len(str(response.content)),
     )
@@ -199,7 +172,7 @@ The status must be completed, failed, or needs_review."""
 
 def verify_node(state: TaskState):
     """Evaluate task completion against recorded execution evidence."""
-    print("[DEBUG] Entered verify_node")
+    print("Entered verify_node")
     messages = state["messages"]
 
     start_index = state.get("attempt_start_index", 0)
@@ -218,8 +191,6 @@ def verify_node(state: TaskState):
     attempt_history = list(state.get("attempt_history", []))
     attempt_number = state.get("retry_count", 0) + 1
 
-    # Hard-fail only if the LAST tool call errored, i.e. the agent never
-    # recovered. Earlier errors that were fixed by a later call are normal.
     if tool_evidence and tool_evidence[-1]["status"] == "error":
         last = tool_evidence[-1]
         reason = f"The last tool call ({last['tool']}) returned an error."
@@ -254,7 +225,7 @@ def verify_node(state: TaskState):
         raw = str(response.content)
     except Exception as error:
         raw = ""
-        print("[DEBUG] Verifier call failed:", type(error).__name__, error)
+        print("Verifier call failed:", type(error).__name__, error)
 
     print(raw)
 
@@ -278,7 +249,7 @@ def verify_node(state: TaskState):
         "reason": reason,
         "evidence": evidence_list,
     })
-    print("[DEBUG] Verification verdict:", status, "| retries =", state.get("retry_count", 0))
+    print("Verification verdict:", status, "| retries =", state.get("retry_count", 0))
 
     return {
         "status": status,
@@ -291,7 +262,7 @@ def verify_node(state: TaskState):
 def recover_node(state: TaskState):
     """Prepare a bounded recovery attempt."""
     retry_count = state.get("retry_count", 0) + 1
-    print("[DEBUG] Entered recover_node; retry =", retry_count)
+    print("Entered recover_node; retry =", retry_count)
 
     return {
         "retry_count": retry_count,
@@ -312,7 +283,6 @@ def recover_node(state: TaskState):
         "observations": state.get("observations", []) + [
             f"Recovery attempt {retry_count} started."
         ],
-        # Index just after the recovery message that is being appended.
         "attempt_start_index": len(state["messages"]) + 1,
     }
 
@@ -335,8 +305,6 @@ def route_after_verification(state: TaskState):
 builder = StateGraph(TaskState)
 
 builder.add_node("agent", agent_node)
-# handle_tool_errors=True turns tool exceptions into error ToolMessages the
-# model can see and react to, instead of crashing the whole graph.
 builder.add_node("tools", ToolNode(tools, handle_tool_errors=True))
 builder.add_node("record_results", record_tool_results)
 builder.add_node("verify", verify_node)
